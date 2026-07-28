@@ -2,354 +2,801 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arbis + ODC Mission Assurance Simulation</title>
-  <link rel="icon" href="assets/arbis-favicon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#070A12" />
+  <title>Arbis + ODC | Verified Operational Truth</title>
   <style>
     :root{
-      --arbis-blue:#3b82f6;
-      --arbis-violet:#8b5cf6;
-      --arbis-peach:#f97316;
-      --arbis-ink:#15203a;
-      --muted:#64748b;
-      --line:#e2e8f0;
-      --soft:#f8fafc;
-      --white:#ffffff;
-      --navy:#111b31;
-      --navy-2:#0d172a;
-      --green:#34d399;
-      --amber:#fbbf24;
-      --red:#f87171;
+      --bg:#070A12;
+      --bg-soft:#0A0F1D;
+      --panel:#0D111D;
+      --panel-2:#111827;
+      --text:#F7F8FC;
+      --muted:#8D94A5;
+      --line:rgba(255,255,255,.10);
+      --line-strong:rgba(255,255,255,.18);
+      --blue:#3B82F6;
+      --purple:#9F8EE4;
+      --peach:#F9A27C;
+      --green:#62D9A6;
+      --danger:#FF6B7A;
+      --shadow:0 30px 100px rgba(0,0,0,.45);
+      --radius:26px;
     }
+
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
-      color:var(--arbis-ink);
-      background:#fff;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(59,130,246,.10), transparent 30%),
+        radial-gradient(circle at 10% 90%, rgba(159,142,228,.08), transparent 28%),
+        var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,Arial,sans-serif;
+      overflow-x:hidden;
     }
-    button,select{font:inherit}
-    .wrap{max-width:1520px;margin:0 auto;padding:18px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:14px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand-mark{width:44px;height:44px}
-    .brand-title{font-size:30px;font-weight:650;letter-spacing:-.04em}
-    .brand-sub{font-size:13px;color:var(--muted);margin-top:2px}
-    .ready{display:inline-flex;align-items:center;gap:8px;border:1px solid #bbf7d0;background:#ecfdf5;color:#047857;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700}
-    .dot{width:8px;height:8px;border-radius:50%;background:#10b981}
-    .hero{
-      margin-top:18px;
-      border:1px solid rgba(139,92,246,.22);
-      background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(139,92,246,.09),rgba(249,115,22,.07));
-      border-radius:24px;padding:26px;
-      display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;align-items:end
+
+    button{font:inherit}
+    .app-shell{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
     }
-    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2563eb;margin-bottom:10px}
-    h1{margin:0;color:var(--arbis-ink);font-size:clamp(34px,4.5vw,58px);line-height:1.04;letter-spacing:-.045em;font-weight:700;max-width:840px}
-    .gradient-text{background:linear-gradient(90deg,var(--arbis-blue),var(--arbis-violet),var(--arbis-peach));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .hero p{max-width:800px;margin:16px 0 0;color:#566176;font-size:18px;line-height:1.65;letter-spacing:-.01em}
-    .control-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px}
-    .control-card label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
-    select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fff;color:var(--arbis-ink)}
-    .run{width:100%;border:0;border-radius:12px;padding:12px 14px;margin-top:10px;color:#fff;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--arbis-blue),var(--arbis-violet),var(--arbis-peach))}
-    .run:disabled{opacity:.5;cursor:not-allowed}
-    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
-    .metric{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}
-    .metric-label{font-size:13px;color:var(--muted)}
-    .metric-value{font-size:28px;font-weight:750;margin-top:4px}
-    .metric-sub{font-size:13px;margin-top:2px}
-    .blue{color:#2563eb}.violet{color:#7c3aed}.orange{color:#ea580c}
-    .main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.9fr) minmax(300px,.75fr);gap:14px;margin-top:16px}
-    .dark{background:linear-gradient(180deg,var(--navy),var(--navy-2));border:1px solid rgba(148,163,184,.18);border-radius:18px;color:#f8fafc;padding:15px}
-    .dark h2{font-size:15px;margin:0 0 12px;font-weight:700}
-    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
-    .panel-head h2{margin:0}
-    .muted-dark{color:#94a3b8}
-    .radar{width:100%;height:auto;display:block}
-    .radar-ring{fill:none;stroke:rgba(148,163,184,.43);stroke-width:1.4;stroke-dasharray:6 6}
-    .radar-ring.outer{stroke:rgba(139,92,246,.85)}
-    .site{fill:#60a5fa;filter:drop-shadow(0 0 5px rgba(96,165,250,.8))}
-    .site.dim{opacity:.28;filter:none}
-    .track-line{fill:none;stroke:#fb923c;stroke-width:3;stroke-dasharray:7 6}
-    .camera-line{stroke:#a78bfa;stroke-width:2.5;stroke-dasharray:5 5}
-    .target{fill:#fb923c;filter:drop-shadow(0 0 8px rgba(251,146,60,.9))}
-    .pulse{animation:pulse 1s ease-in-out infinite alternate}
-    @keyframes pulse{from{opacity:.45}to{opacity:1}}
-    .phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-    .phase{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);border-radius:12px;padding:11px}
-    .phase b{display:block;font-size:11px;letter-spacing:.08em}
-    .phase span{display:block;color:#cbd5e1;font-size:13px;margin-top:4px}
-    .stack{display:flex;flex-direction:column;gap:14px}
-    .events{display:flex;flex-direction:column;gap:12px}
-    .event{border-left:2px solid rgba(96,165,250,.55);padding-left:12px}
-    .event-top{display:flex;justify-content:space-between;gap:10px}
-    .event b{font-size:13px}
-    .event small{display:block;color:#94a3b8;margin-top:3px;font-size:12px;line-height:1.45}
-    .status{font-size:11px;font-weight:800}
-    .checks{font-size:13px}
-    .check{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(148,163,184,.13)}
-    .check:last-child{border-bottom:0}
-    .callout{margin-top:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);border-radius:12px;padding:12px;color:#cbd5e1;font-size:13px;line-height:1.45}
-    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}
-    .badge-neutral{background:rgba(255,255,255,.1);color:#cbd5e1}
-    .badge-green{background:rgba(16,185,129,.15);color:#6ee7b7}
-    .badge-amber{background:rgba(245,158,11,.15);color:#fcd34d}
-    .badge-red{background:rgba(239,68,68,.15);color:#fca5a5}
-    .scenario-copy{font-size:13px;line-height:1.55;color:#cbd5e1}
-    .kv{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:13px}
-    .kv:last-child{border-bottom:0}
-    .kv span:first-child{color:#94a3b8}
-    .actions{display:grid;gap:8px;margin-top:12px}
-    .actions button{border:0;border-radius:11px;padding:10px 12px;color:#fff;font-weight:750;cursor:pointer}
-    .approve{background:#059669}.more{background:#7c3aed}.reject{background:#dc2626}
-    .architecture{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:10px;align-items:center;margin-top:16px}
-    .node{border:1px solid var(--line);border-radius:15px;padding:14px;background:#fff}
-    .node.arbis{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(139,92,246,.09),rgba(249,115,22,.07));border-color:rgba(139,92,246,.22)}
-    .node-title{font-weight:800;font-size:14px}
-    .node-sub{font-size:13px;font-weight:700;margin-top:2px}
-    .node-copy{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
-    .arrow{text-align:center;color:var(--muted);font-size:24px}
-    @media(max-width:1180px){.main{grid-template-columns:1fr 1fr}.main>.stack:last-child{grid-column:1/-1}.hero{grid-template-columns:1fr}.architecture{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
-    @media(max-width:760px){.wrap{padding:10px}.topbar{align-items:flex-start}.brand-title{font-size:24px}.hero{padding:18px}.metrics{grid-template-columns:repeat(2,1fr)}.main{grid-template-columns:1fr}.main>.stack:last-child{grid-column:auto}.architecture{grid-template-columns:1fr}.phase-grid{grid-template-columns:1fr 1fr 1fr}.hero p{font-size:16px}}
+
+    .topbar{
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:22px 30px;
+      background:linear-gradient(to bottom,rgba(7,10,18,.86),rgba(7,10,18,0));
+      pointer-events:none;
+    }
+    .brand,.top-actions{pointer-events:auto}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      letter-spacing:.02em;
+      font-weight:650;
+    }
+    .brand-mark{
+      width:34px;height:34px;border-radius:10px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      box-shadow:0 0 30px rgba(59,130,246,.25);
+      font-size:14px;
+      font-weight:800;
+    }
+    .brand span:last-child{color:rgba(255,255,255,.86)}
+    .top-actions{display:flex;gap:10px}
+    .ghost-btn,.primary-btn,.danger-btn{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:12px 18px;
+      color:var(--text);
+      background:rgba(255,255,255,.04);
+      cursor:pointer;
+      transition:.25s ease;
+    }
+    .ghost-btn:hover{background:rgba(255,255,255,.08);border-color:var(--line-strong)}
+    .primary-btn{
+      background:linear-gradient(135deg,var(--blue),#6E67F5);
+      border-color:transparent;
+      box-shadow:0 14px 40px rgba(59,130,246,.24);
+    }
+    .primary-btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .danger-btn{
+      background:rgba(255,107,122,.10);
+      border-color:rgba(255,107,122,.28);
+      color:#FFD7DC;
+    }
+
+    .stage{
+      min-height:100vh;
+      position:relative;
+      display:grid;
+      place-items:center;
+      padding:110px 28px 44px;
+      overflow:hidden;
+    }
+
+    .scene{
+      width:min(1180px,100%);
+      display:none;
+      opacity:0;
+      transform:translateY(20px);
+    }
+    .scene.active{
+      display:block;
+      animation:sceneIn .9s cubic-bezier(.16,1,.3,1) forwards;
+    }
+    @keyframes sceneIn{
+      to{opacity:1;transform:none}
+    }
+
+    .eyebrow{
+      color:rgba(255,255,255,.52);
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.24em;
+      font-weight:700;
+      margin-bottom:22px;
+    }
+    .hero-title{
+      margin:0;
+      max-width:1000px;
+      font-size:clamp(56px,8.2vw,118px);
+      line-height:.92;
+      letter-spacing:-.06em;
+      font-weight:650;
+    }
+    .hero-title .gradient{
+      background:linear-gradient(90deg,#F8FAFF 0%,#BBD4FF 42%,#B9AFFF 72%,#FFD0BD 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .hero-copy{
+      max-width:760px;
+      margin:28px 0 38px;
+      font-size:clamp(19px,2vw,27px);
+      line-height:1.45;
+      color:rgba(255,255,255,.62);
+      letter-spacing:-.015em;
+    }
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .hero-note{
+      margin-top:26px;
+      color:rgba(255,255,255,.36);
+      font-size:13px;
+    }
+
+    .cinematic-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:34px;
+      align-items:center;
+    }
+    .scene-title{
+      margin:0;
+      font-size:clamp(42px,6vw,82px);
+      line-height:.98;
+      letter-spacing:-.05em;
+      font-weight:620;
+    }
+    .scene-subtitle{
+      margin-top:22px;
+      max-width:650px;
+      color:rgba(255,255,255,.58);
+      font-size:clamp(17px,1.8vw,24px);
+      line-height:1.5;
+    }
+
+    .radar-wrap{
+      position:relative;
+      aspect-ratio:1;
+      max-width:620px;
+      margin:auto;
+      border-radius:50%;
+      background:
+        radial-gradient(circle,rgba(59,130,246,.07) 0 1px,transparent 1px),
+        radial-gradient(circle at center,rgba(59,130,246,.08),transparent 62%),
+        #08111C;
+      background-size:22px 22px,auto,auto;
+      border:1px solid rgba(119,175,255,.16);
+      box-shadow:inset 0 0 90px rgba(59,130,246,.05),0 40px 100px rgba(0,0,0,.38);
+      overflow:hidden;
+    }
+    .ring{
+      position:absolute;
+      border:1px solid rgba(121,182,255,.16);
+      border-radius:50%;
+      inset:12%;
+    }
+    .ring.r2{inset:27%}
+    .ring.r3{inset:41%}
+    .cross-h,.cross-v{
+      position:absolute;background:rgba(121,182,255,.11)
+    }
+    .cross-h{height:1px;left:7%;right:7%;top:50%}
+    .cross-v{width:1px;top:7%;bottom:7%;left:50%}
+    .sweep{
+      position:absolute;
+      inset:0;
+      background:conic-gradient(from 0deg,transparent 0deg,transparent 310deg,rgba(59,130,246,.23) 345deg,transparent 360deg);
+      animation:sweep 5.5s linear infinite;
+    }
+    @keyframes sweep{to{transform:rotate(360deg)}}
+    .site{
+      position:absolute;left:50%;top:50%;
+      width:12px;height:12px;border-radius:50%;
+      background:white;
+      transform:translate(-50%,-50%);
+      box-shadow:0 0 25px rgba(255,255,255,.8);
+    }
+    .contact{
+      position:absolute;
+      left:74%;top:22%;
+      width:12px;height:12px;border-radius:50%;
+      background:var(--peach);
+      box-shadow:0 0 20px rgba(249,162,124,.9);
+      animation:contactPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes contactPulse{
+      0%,100%{transform:scale(.9);opacity:.75}
+      50%{transform:scale(1.25);opacity:1}
+    }
+    .contact::after{
+      content:"";
+      position:absolute;inset:-11px;
+      border:1px solid rgba(249,162,124,.42);
+      border-radius:50%;
+      animation:ripple 1.7s ease-out infinite;
+    }
+    @keyframes ripple{
+      from{transform:scale(.45);opacity:.9}
+      to{transform:scale(1.8);opacity:0}
+    }
+    .track-line{
+      position:absolute;
+      left:50%;top:50%;
+      width:30%;height:1px;
+      background:linear-gradient(90deg,rgba(255,255,255,.15),rgba(249,162,124,.8));
+      transform-origin:left center;
+      transform:rotate(-42deg);
+    }
+    .radar-caption{
+      position:absolute;left:7%;bottom:7%;
+      font-size:12px;letter-spacing:.16em;
+      text-transform:uppercase;color:rgba(255,255,255,.45)
+    }
+
+    .sequence{
+      display:grid;
+      gap:12px;
+      margin-top:34px;
+      max-width:520px;
+    }
+    .sequence-step{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:15px 0;
+      border-bottom:1px solid var(--line);
+      opacity:.35;
+      transform:translateY(8px);
+      transition:.6s ease;
+    }
+    .sequence-step.visible{opacity:1;transform:none}
+    .sequence-step strong{font-size:15px;letter-spacing:.08em;text-transform:uppercase}
+    .sequence-step span{color:var(--green);font-size:13px}
+
+    .ai-result{
+      margin-top:34px;
+      padding:26px 0;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:20px;
+      align-items:end;
+    }
+    .ai-label{color:var(--purple);font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+    .ai-class{margin-top:8px;font-size:clamp(30px,4vw,52px);letter-spacing:-.04em}
+    .confidence{
+      text-align:right;
+      font-size:clamp(38px,5vw,68px);
+      letter-spacing:-.05em;
+      color:#DCCEFF;
+    }
+    .confidence small{
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.4)
+    }
+
+    .verify-screen{
+      text-align:center;
+      max-width:840px;
+      margin:auto;
+    }
+    .arbis-word{
+      font-size:clamp(64px,12vw,168px);
+      letter-spacing:-.07em;
+      line-height:.85;
+      font-weight:680;
+      background:linear-gradient(90deg,#D8E8FF,var(--blue),var(--purple));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .verify-label{
+      margin-top:24px;
+      font-size:clamp(17px,2vw,24px);
+      color:rgba(255,255,255,.5);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .checks{
+      margin:46px auto 0;
+      max-width:650px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px 28px;
+      text-align:left;
+    }
+    .check{
+      padding:15px 0;
+      border-bottom:1px solid var(--line);
+      opacity:.18;
+      transform:translateY(8px);
+      transition:.55s ease;
+      display:flex;gap:12px;align-items:center;
+      color:rgba(255,255,255,.72);
+    }
+    .check.visible{opacity:1;transform:none}
+    .check::before{
+      content:"✓";
+      display:grid;place-items:center;
+      width:24px;height:24px;border-radius:50%;
+      background:rgba(98,217,166,.12);
+      color:var(--green);
+      border:1px solid rgba(98,217,166,.26);
+      font-size:12px;
+      flex:0 0 auto;
+    }
+
+    .decision-wrap{
+      max-width:900px;
+      margin:auto;
+    }
+    .status-chip{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;
+      border:1px solid rgba(249,162,124,.32);
+      background:rgba(249,162,124,.09);
+      border-radius:999px;
+      color:#FFD8C8;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      margin-bottom:26px;
+    }
+    .decision-title{
+      font-size:clamp(52px,8vw,108px);
+      line-height:.9;
+      letter-spacing:-.06em;
+      margin:0;
+      max-width:980px;
+    }
+    .decision-meta{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin:42px 0 34px;
+    }
+    .meta{
+      padding-top:16px;
+      border-top:1px solid var(--line);
+    }
+    .meta-label{
+      font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.38)
+    }
+    .meta-value{margin-top:9px;font-size:20px;color:rgba(255,255,255,.84)}
+    .decision-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+    .success{
+      text-align:center;
+      max-width:980px;
+      margin:auto;
+    }
+    .success-icon{
+      margin:auto;
+      width:74px;height:74px;border-radius:50%;
+      display:grid;place-items:center;
+      font-size:30px;
+      color:#04130D;
+      background:var(--green);
+      box-shadow:0 0 60px rgba(98,217,166,.28);
+    }
+    .success-title{
+      margin:28px auto 0;
+      font-size:clamp(52px,8vw,105px);
+      line-height:.92;
+      letter-spacing:-.06em;
+      max-width:1000px;
+    }
+    .success-copy{
+      margin:24px auto 0;
+      color:rgba(255,255,255,.55);
+      font-size:clamp(18px,2vw,25px);
+      max-width:720px;
+      line-height:1.5;
+    }
+    .flow{
+      margin:52px auto 0;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+      align-items:center;
+    }
+    .flow-node{
+      min-height:124px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      background:rgba(255,255,255,.025);
+      text-align:left;
+    }
+    .flow-node.highlight{
+      border-color:rgba(59,130,246,.36);
+      background:linear-gradient(180deg,rgba(59,130,246,.10),rgba(159,142,228,.06));
+    }
+    .flow-num{color:rgba(255,255,255,.30);font-size:11px;letter-spacing:.16em}
+    .flow-name{font-size:18px;line-height:1.2}
+    .footer-actions{margin-top:36px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+    .scene-nav{
+      position:fixed;
+      z-index:45;
+      left:50%;bottom:24px;
+      transform:translateX(-50%);
+      display:flex;gap:8px;
+      padding:8px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(7,10,18,.72);
+      backdrop-filter:blur(18px);
+    }
+    .dot{
+      width:9px;height:9px;border-radius:50%;
+      border:0;background:rgba(255,255,255,.20);cursor:pointer;padding:0;
+      transition:.25s ease;
+    }
+    .dot.active{width:28px;border-radius:999px;background:var(--blue)}
+
+    .modal{
+      position:fixed;inset:0;z-index:100;
+      display:none;place-items:center;
+      background:rgba(3,5,10,.76);
+      backdrop-filter:blur(18px);
+      padding:24px;
+    }
+    .modal.open{display:grid}
+    .modal-card{
+      width:min(760px,100%);
+      max-height:82vh;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:26px;
+      background:#0A0F1A;
+      box-shadow:var(--shadow);
+      padding:28px;
+    }
+    .modal-head{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      margin-bottom:20px;
+    }
+    .modal h2{margin:0;font-size:28px;letter-spacing:-.03em}
+    .close{
+      border:0;background:transparent;color:var(--muted);font-size:24px;cursor:pointer;
+    }
+    .receipt-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:14px;
+    }
+    .receipt-item{
+      padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.025)
+    }
+    .receipt-item span{display:block;color:rgba(255,255,255,.38);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
+    .receipt-item strong{display:block;margin-top:8px;font-size:15px;font-weight:520}
+
+    @media (max-width:900px){
+      .cinematic-grid{grid-template-columns:1fr}
+      .radar-wrap{max-width:520px}
+      .decision-meta,.flow{grid-template-columns:1fr 1fr}
+      .checks{grid-template-columns:1fr}
+    }
+    @media (max-width:620px){
+      .topbar{padding:18px 18px}
+      .brand span:last-child{display:none}
+      .top-actions .ghost-btn{display:none}
+      .stage{padding:96px 18px 80px}
+      .hero-title{font-size:52px}
+      .decision-meta,.flow,.receipt-grid{grid-template-columns:1fr}
+      .flow-node{min-height:100px}
+      .scene-nav{bottom:14px}
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
+  <div class="app-shell">
     <header class="topbar">
-      <div class="brand">
-        <img src="assets/arbis-logo.svg" alt="Arbis logo" class="brand-mark">
-        <div>
-          <div class="brand-title">Arbis AI</div>
-          <div class="brand-sub">Trusted Execution Fabric for Autonomous Missions</div>
-        </div>
+      <div class="brand" aria-label="Arbis AI">
+        <div class="brand-mark">A</div>
+        <span>ARBIS + ODC</span>
       </div>
-      <div class="ready"><span class="dot"></span><span id="systemStatus">System ready</span></div>
+      <div class="top-actions">
+        <button class="ghost-btn" id="receiptTop">View Evidence Receipt</button>
+        <button class="primary-btn" id="restartTop">Restart Mission</button>
+      </div>
     </header>
 
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Interactive mission assurance</div>
-        <h1>From RF detection to <span class="gradient-text">verified operational truth.</span></h1>
-        <p>ODC finds, fixes, and tracks. Mission AI classifies. Arbis independently verifies whether the resulting knowledge is trustworthy, authorized, and safe to distribute.</p>
-      </div>
-      <div class="control-card">
-        <label for="scenario">Mission scenario</label>
-        <select id="scenario">
-          <option value="known">1. Known drone — verified and tracked</option>
-          <option value="unknown">2. Unknown adversary drone — new signature approval</option>
-          <option value="ddil">3. DDIL — EO unavailable</option>
-          <option value="rogue">4. Rogue app — unauthorized classification</option>
-        </select>
-        <button class="run" id="runMission">Run simulation</button>
-      </div>
-    </section>
-
-    <section class="metrics">
-      <div class="metric"><div class="metric-label">Detections</div><div id="metricDetected" class="metric-value">0</div><div class="metric-sub blue">Inbound contacts</div></div>
-      <div class="metric"><div class="metric-label">Active tracks</div><div id="metricTracks" class="metric-value">0</div><div class="metric-sub violet">Continuous</div></div>
-      <div class="metric"><div class="metric-label">Verified decisions</div><div id="metricVerified" class="metric-value">0</div><div class="metric-sub orange">Policy outcomes</div></div>
-      <div class="metric"><div class="metric-label">Fleet status</div><div id="metricFleet" class="metric-value" style="font-size:19px">Synchronized</div><div class="metric-sub blue">Trusted registry</div></div>
-    </section>
-
-    <section class="main">
-      <div class="dark">
-        <div class="panel-head"><h2>ODC 360° Operating Picture</h2><span id="trackBadge" class="muted-dark" style="font-size:13px">Scanning</span></div>
-        <svg viewBox="0 0 600 540" class="radar" role="img" aria-label="Protected mission site with sensing rings, RF sites, drone track and EO camera tasking">
-          <g transform="translate(300 255)">
-            <circle class="radar-ring" r="90"/><circle class="radar-ring" r="145"/><circle class="radar-ring" r="202"/><circle class="radar-ring outer" r="245"/>
-            <text x="0" y="-97" text-anchor="middle" font-size="12" fill="#a78bfa">DETECT</text>
-            <text x="0" y="-152" text-anchor="middle" font-size="12" fill="#a78bfa">FIX</text>
-            <text x="0" y="-209" text-anchor="middle" font-size="12" fill="#a78bfa">TRACK</text>
-            <text x="0" y="-252" text-anchor="middle" font-size="12" fill="#a78bfa">TRIP WIRE</text>
-            <circle r="58" fill="rgba(96,165,250,.08)" stroke="rgba(148,163,184,.45)"/>
-            <text x="0" y="-4" text-anchor="middle" font-size="13" fill="#f8fafc">PROTECTED</text>
-            <text x="0" y="14" text-anchor="middle" font-size="13" fill="#f8fafc">SITE</text>
-            <g id="rfSites"></g><g id="trackLayer"></g><g id="cameraLayer"></g>
-          </g>
-        </svg>
-        <div class="phase-grid">
-          <div class="phase"><b class="blue">DETECT</b><span id="detectState">Waiting</span></div>
-          <div class="phase"><b class="violet">FIX</b><span id="fixState">Waiting</span></div>
-          <div class="phase"><b class="orange">TRACK</b><span id="trackState">Waiting</span></div>
+    <main class="stage">
+      <section class="scene active" data-scene="0">
+        <div class="eyebrow">Trusted execution for mission AI</div>
+        <h1 class="hero-title">From detection to <span class="gradient">verified operational truth.</span></h1>
+        <p class="hero-copy">
+          ODC senses the environment. Mission AI proposes meaning. Arbis independently determines what can become trusted operational truth.
+        </p>
+        <div class="hero-actions">
+          <button class="primary-btn" id="beginMission">Begin Mission</button>
+          <button class="ghost-btn" id="openArchitecture">View Architecture</button>
         </div>
-      </div>
+        <div class="hero-note">Primary scenario: unknown RF contact → EO confirmation → mission authority approval.</div>
+      </section>
 
-      <div class="stack">
-        <div class="dark">
-          <h2>Mission Event Stream</h2>
-          <div id="eventStream" class="events" aria-live="polite">
-            <div class="event"><div class="event-top"><b>System ready</b><span class="status blue">STANDBY</span></div><small>Choose a scenario and run the mission.</small></div>
+      <section class="scene" data-scene="1">
+        <div class="cinematic-grid">
+          <div>
+            <div class="eyebrow">Scene 01 · ODC real-time sensing fabric</div>
+            <h2 class="scene-title">Unknown RF contact.</h2>
+            <p class="scene-subtitle">ODC detects, fixes, and tracks the inbound signal while preserving the raw evidence chain.</p>
+            <div class="sequence" id="odcSequence">
+              <div class="sequence-step"><strong>Detect</strong><span>Contact acquired</span></div>
+              <div class="sequence-step"><strong>Fix</strong><span>Location resolved</span></div>
+              <div class="sequence-step"><strong>Track</strong><span>Motion confirmed</span></div>
+            </div>
+          </div>
+          <div class="radar-wrap" aria-label="Radar visualization showing an inbound unknown contact">
+            <div class="sweep"></div>
+            <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+            <div class="cross-h"></div><div class="cross-v"></div>
+            <div class="track-line"></div>
+            <div class="site"></div>
+            <div class="contact"></div>
+            <div class="radar-caption">Protected site · inbound track</div>
           </div>
         </div>
+      </section>
 
-        <div id="verificationPanel" class="dark" style="display:none">
-          <div class="panel-head"><h2>Arbis Verification Checks</h2><span id="decisionBadge" class="badge badge-neutral">PENDING</span></div>
-          <div class="checks">
-            <div class="check"><span>Sensor provenance</span><span id="check1" class="muted-dark">Pending</span></div>
-            <div class="check"><span>Multi-sensor correlation</span><span id="check2" class="muted-dark">Pending</span></div>
-            <div class="check"><span>Application integrity</span><span id="check3" class="muted-dark">Pending</span></div>
-            <div class="check"><span>Mission policy / DDIL</span><span id="check4" class="muted-dark">Pending</span></div>
-            <div class="check"><span>Signature previously verified</span><span id="check5" class="muted-dark">Pending</span></div>
-            <div class="check"><span>Mission authority</span><span id="check6" class="muted-dark">Pending</span></div>
+      <section class="scene" data-scene="2">
+        <div class="cinematic-grid">
+          <div>
+            <div class="eyebrow">Scene 02 · Mission application</div>
+            <h2 class="scene-title">RF cannot identify it.</h2>
+            <p class="scene-subtitle">
+              Mission AI automatically tasks the EO sensor and correlates the new visual evidence with the RF track.
+            </p>
+            <div class="ai-result">
+              <div>
+                <div class="ai-label">Mission AI classification</div>
+                <div class="ai-class">Probable Adversary UAS<br/>New Variant</div>
+              </div>
+              <div class="confidence">96.8%<small>confidence</small></div>
+            </div>
           </div>
-          <div id="decisionCallout" class="callout">Arbis has not issued a decision.</div>
-        </div>
-      </div>
-
-      <div class="stack">
-        <div class="dark">
-          <h2>Mission Scenario</h2>
-          <div id="scenarioSummary" class="scenario-copy">ODC detects an inbound RF contact and maintains continuous tracking.</div>
-        </div>
-
-        <div id="candidatePanel" class="dark" style="display:none">
-          <div class="panel-head"><h2>Candidate Mission Knowledge</h2><span id="candidateBadge" class="badge badge-amber">AWAITING APPROVAL</span></div>
-          <div class="kv"><span>Candidate class</span><span id="candidateClass">—</span></div>
-          <div class="kv"><span>Signature ID</span><span id="candidateId" style="color:#fdba74;font-weight:800">—</span></div>
-          <div class="kv"><span>Confidence</span><span id="candidateConfidence" style="color:#fdba74;font-weight:800">—</span></div>
-          <div class="kv"><span>Distribution status</span><span id="candidateDistribution" style="color:#fcd34d;text-align:right">Blocked</span></div>
-          <div id="candidateActions" class="actions">
-            <button id="approveSignature" class="approve">Approve signature</button>
-            <button id="requestEvidence" class="more">Request more evidence</button>
-            <button id="rejectSignature" class="reject">Reject signature</button>
+          <div class="radar-wrap" aria-label="Correlated RF and EO mission view">
+            <div class="sweep"></div>
+            <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+            <div class="cross-h"></div><div class="cross-v"></div>
+            <div class="track-line"></div>
+            <div class="site"></div>
+            <div class="contact"></div>
+            <div class="radar-caption">EO tasking complete · correlation established</div>
           </div>
         </div>
+      </section>
 
-        <div id="receiptPanel" class="dark" style="display:none">
-          <div class="panel-head"><h2>Cryptographic Decision Receipt</h2><span id="receiptBadge" class="badge badge-neutral">PENDING</span></div>
-          <div class="kv"><span>Decision</span><span id="receiptDecision">Pending</span></div>
-          <div class="kv"><span>Evidence bound</span><span id="receiptEvidence">Pending</span></div>
-          <div class="kv"><span>Fleet action</span><span id="receiptFleet" style="text-align:right">Pending</span></div>
-          <div class="kv"><span>Receipt ID</span><span id="receiptId">—</span></div>
+      <section class="scene" data-scene="3">
+        <div class="verify-screen">
+          <div class="arbis-word">ARBIS</div>
+          <div class="verify-label">Independent verification</div>
+          <div class="checks" id="checks">
+            <div class="check">Sensor provenance</div>
+            <div class="check">Multi-sensor correlation</div>
+            <div class="check">Application identity</div>
+            <div class="check">Runtime integrity</div>
+            <div class="check">Mission policy</div>
+            <div class="check">Mission authority</div>
+          </div>
         </div>
+      </section>
+
+      <section class="scene" data-scene="4">
+        <div class="decision-wrap">
+          <div class="status-chip">Mission authority required</div>
+          <h2 class="decision-title">Hold for approval.</h2>
+          <div class="decision-meta">
+            <div class="meta">
+              <div class="meta-label">Candidate class</div>
+              <div class="meta-value">Probable Adversary UAS</div>
+            </div>
+            <div class="meta">
+              <div class="meta-label">Signature ID</div>
+              <div class="meta-value">RF-SIG-2037</div>
+            </div>
+            <div class="meta">
+              <div class="meta-label">Fleet distribution</div>
+              <div class="meta-value" style="color:#FFD8C8">Blocked</div>
+            </div>
+          </div>
+          <div class="decision-actions">
+            <button class="primary-btn" id="approve">Approve Signature</button>
+            <button class="ghost-btn" id="moreEvidence">Request More Evidence</button>
+            <button class="danger-btn" id="reject">Reject Signature</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene" data-scene="5">
+        <div class="success">
+          <div class="success-icon">✓</div>
+          <h2 class="success-title">Trusted fleet knowledge updated.</h2>
+          <p class="success-copy">
+            The new signature is now approved, cryptographically receipted, and available for trusted recognition across future missions.
+          </p>
+          <div class="flow">
+            <div class="flow-node">
+              <div class="flow-num">01</div>
+              <div class="flow-name">ODC Sensing</div>
+            </div>
+            <div class="flow-node">
+              <div class="flow-num">02</div>
+              <div class="flow-name">Mission AI</div>
+            </div>
+            <div class="flow-node highlight">
+              <div class="flow-num">03</div>
+              <div class="flow-name">Arbis Verification</div>
+            </div>
+            <div class="flow-node">
+              <div class="flow-num">04</div>
+              <div class="flow-name">Trusted Operational Truth</div>
+            </div>
+          </div>
+          <div class="footer-actions">
+            <button class="ghost-btn" id="viewReceipt">View Evidence Receipt</button>
+            <button class="primary-btn" id="restartBottom">Run Again</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="scene-nav" aria-label="Mission scene navigation">
+      <button class="dot active" aria-label="Opening"></button>
+      <button class="dot" aria-label="Detection"></button>
+      <button class="dot" aria-label="Mission AI"></button>
+      <button class="dot" aria-label="Arbis verification"></button>
+      <button class="dot" aria-label="Decision"></button>
+      <button class="dot" aria-label="Trusted truth"></button>
+    </nav>
+  </div>
+
+  <div class="modal" id="receiptModal" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="receiptTitle">Cryptographic Decision Receipt</h2>
+        <button class="close" id="closeReceipt" aria-label="Close">×</button>
       </div>
-    </section>
+      <div class="receipt-grid">
+        <div class="receipt-item"><span>Decision</span><strong>Approved for fleet distribution</strong></div>
+        <div class="receipt-item"><span>Receipt ID</span><strong>ARBIS-ODC-2037-7F92</strong></div>
+        <div class="receipt-item"><span>Evidence</span><strong>RF + EO correlated evidence</strong></div>
+        <div class="receipt-item"><span>Application</span><strong>Mission Fusion AI v4.2</strong></div>
+        <div class="receipt-item"><span>Policy</span><strong>Mission Knowledge Release 12.4</strong></div>
+        <div class="receipt-item"><span>Authority</span><strong>Mission Authority · Verified</strong></div>
+        <div class="receipt-item"><span>Signature</span><strong>RF-SIG-2037</strong></div>
+        <div class="receipt-item"><span>Fleet action</span><strong>Registry propagated</strong></div>
+      </div>
+    </div>
+  </div>
 
-    <section class="architecture">
-      <div class="node"><div class="node-title blue">ODC</div><div class="node-sub">Sensing Fabric</div><div class="node-copy">RF • Doppler • Localization • Tracking</div></div>
-      <div class="arrow">→</div>
-      <div class="node"><div class="node-title violet">Mission Application</div><div class="node-sub">Sensor Fusion + Classification</div><div class="node-copy">EO tasking • Models • Proposed knowledge</div></div>
-      <div class="arrow">→</div>
-      <div class="node arbis"><div class="node-title orange">Arbis</div><div class="node-sub">Trusted Execution Fabric</div><div class="node-copy">Verify • Authorize • Prove • Distribute</div></div>
-      <div class="arrow">→</div>
-      <div class="node"><div class="node-title blue">Operational Truth</div><div class="node-sub">Trusted Fleet Knowledge</div><div class="node-copy">Authorized edge nodes receive verified updates</div></div>
-    </section>
-  </main>
+  <div class="modal" id="architectureModal" role="dialog" aria-modal="true" aria-labelledby="architectureTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="architectureTitle">Reference Architecture</h2>
+        <button class="close" id="closeArchitecture" aria-label="Close">×</button>
+      </div>
+      <div class="flow">
+        <div class="flow-node"><div class="flow-num">01</div><div class="flow-name">ODC Real-Time Sensing Fabric</div></div>
+        <div class="flow-node"><div class="flow-num">02</div><div class="flow-name">Mission Application</div></div>
+        <div class="flow-node highlight"><div class="flow-num">03</div><div class="flow-name">Arbis Trusted Execution Fabric</div></div>
+        <div class="flow-node"><div class="flow-num">04</div><div class="flow-name">Trusted Operational Truth</div></div>
+      </div>
+    </div>
+  </div>
 
-<script>
-const $=id=>document.getElementById(id),wait=ms=>new Promise(r=>setTimeout(r,ms));let running=false;
-const rfSites=$('rfSites');
-[105,160,218,244].forEach((radius,ringIndex)=>{
-  const count=[10,13,17,20][ringIndex];
-  for(let i=0;i<count;i++){
-    const angle=(Math.PI*2*i/count)+ringIndex*.11;
-    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    circle.setAttribute('cx',Math.cos(angle)*radius);circle.setAttribute('cy',Math.sin(angle)*radius);
-    circle.setAttribute('r',ringIndex===3?4:3.4);circle.setAttribute('class','site dim');rfSites.appendChild(circle)
-  }
-});
-function setText(id,v){$(id).textContent=v}
-function reset(){
-  $('eventStream').innerHTML='';$('trackLayer').innerHTML='';$('cameraLayer').innerHTML='';
-  document.querySelectorAll('.site').forEach(s=>s.setAttribute('class','site dim'));
-  $('verificationPanel').style.display='none';$('candidatePanel').style.display='none';$('receiptPanel').style.display='none';$('candidateActions').style.display='grid';
-  setText('metricDetected','0');setText('metricTracks','0');setText('metricVerified','0');setText('metricFleet','Synchronized');
-  setText('detectState','Waiting');setText('fixState','Waiting');setText('trackState','Waiting');setText('trackBadge','Scanning');setText('systemStatus','Mission running');
-  $('decisionBadge').className='badge badge-neutral';setText('decisionBadge','PENDING');setText('candidateBadge','AWAITING APPROVAL');setText('candidateDistribution','Blocked')
-}
-function addEvent(title,detail,status,tone='blue'){
-  const row=document.createElement('div');row.className='event';
-  row.innerHTML=`<div class="event-top"><b>${title}</b><span class="status ${tone}">${status}</span></div><small>${detail}</small>`;
-  $('eventStream').appendChild(row)
-}
-function activateSites(count){[...document.querySelectorAll('.site')].slice(0,count).forEach(s=>s.setAttribute('class','site pulse'))}
-function drawTrack(){
-  const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d','M 220 -185 C 170 -165, 125 -110, 72 -48');p.setAttribute('class','track-line');$('trackLayer').appendChild(p);
-  const t=document.createElementNS('http://www.w3.org/2000/svg','circle');t.setAttribute('cx','72');t.setAttribute('cy','-48');t.setAttribute('r','8');t.setAttribute('class','target pulse');$('trackLayer').appendChild(t)
-}
-function drawCamera(){
-  const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1','-60');l.setAttribute('y1','35');l.setAttribute('x2','72');l.setAttribute('y2','-48');l.setAttribute('class','camera-line');$('cameraLayer').appendChild(l);
-  const c=document.createElementNS('http://www.w3.org/2000/svg','rect');c.setAttribute('x','-79');c.setAttribute('y','24');c.setAttribute('width','23');c.setAttribute('height','19');c.setAttribute('rx','4');c.setAttribute('fill','#8b5cf6');c.setAttribute('stroke','#f8fafc');c.setAttribute('stroke-width','1.4');$('cameraLayer').appendChild(c)
-}
-function setChecks(vals){vals.forEach((v,i)=>{const el=$('check'+(i+1));el.textContent=v.text;el.style.color=v.color;el.style.fontWeight='700'})}
-function receipt(decision,evidence,fleet,id){
-  $('receiptPanel').style.display='block';$('receiptBadge').className='badge badge-green';setText('receiptBadge','ISSUED');
-  setText('receiptDecision',decision);setText('receiptEvidence',evidence);setText('receiptFleet',fleet);setText('receiptId',id)
-}
-async function verify(){
-  $('verificationPanel').style.display='block';
-  setChecks(Array(6).fill({text:'Verifying…',color:'#94a3b8'}));
-  addEvent('Arbis verification invoked','The proposed knowledge update reaches the independent trust boundary.','VERIFY','violet');
-  await wait(700)
-}
-async function runMission(){
-  if(running)return;running=true;$('runMission').disabled=true;reset();
-  const scenario=$('scenario').value;
-  const summaries={
-    known:'ODC detects a known UAS signature. Arbis verifies the evidence, application identity and mission policy before distribution.',
-    unknown:'ODC detects an unknown RF signature. EO identifies a probable adversary UAS. Arbis isolates the candidate signature until mission authority approves it.',
-    ddil:'ODC continues tracking under degraded conditions. Arbis applies local DDIL policy and blocks unsupported classification.',
-    rogue:'A rogue application attempts to inject a friendly classification. Arbis rejects the unauthorized update and preserves the trusted operating picture.'
-  };
-  setText('scenarioSummary',summaries[scenario]);
-  addEvent('ODC sensing fabric online','RF nodes begin scanning the protected mission area.','READY','blue');
-  await wait(550);activateSites(15);setText('metricDetected','1');setText('detectState','Contact found');addEvent('Inbound RF contact detected','Multiple RF sites confirm a common airborne emitter.','DETECT','blue');
-  await wait(650);activateSites(34);setText('fixState','Position fixed');addEvent('Position fixed in 3D space','Time-correlated observations establish a high-quality location.','FIX','violet');
-  await wait(650);activateSites(60);drawTrack();setText('metricTracks','1');setText('trackState','Continuous track');setText('trackBadge','Track 021 active');addEvent('Continuous RF track established','ODC maintains the object trajectory across successive observations.','TRACK','orange');
-  await wait(700);
-  if(scenario==='known'){
-    addEvent('Known UAS signature matched','The RF signature matches an approved profile in the trusted registry.','MATCH','green');await verify();
-    setChecks([{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'AUTHORIZED',color:'#6ee7b7'}]);
-    $('decisionBadge').className='badge badge-green';setText('decisionBadge','GREEN');setText('decisionCallout','VERIFIED: Continue tracking and distribute the trusted classification to authorized mission applications.');
-    setText('metricVerified','1');setText('systemStatus','Mission assured');receipt('Continue tracking','RF evidence + trusted registry','Authorized nodes updated','ARB-8F31-021')
-  }
-  if(scenario==='unknown'){
-    addEvent('Unknown RF signature','No matching signature exists in the local trusted registry.','UNKNOWN','orange');await wait(600);drawCamera();
-    addEvent('EO camera tasked','The mission application points an available camera toward Track 021.','ACTIVE','violet');await wait(750);
-    addEvent('Probable adversary UAS','RF and EO fusion identify a previously unseen adversary drone variant with 96.8% confidence.','NEW INTEL','orange');await verify();
-    setChecks([{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'PASS',color:'#6ee7b7'},{text:'NEW SIGNATURE',color:'#fcd34d'},{text:'AWAITING APPROVAL',color:'#fcd34d'}]);
-    $('decisionBadge').className='badge badge-amber';setText('decisionBadge','HOLD FOR APPROVAL');
-    setText('decisionCallout','Arbis has isolated the new signature as candidate mission knowledge. Fleet-wide distribution is blocked until mission authority approves it.');
-    $('candidatePanel').style.display='block';setText('candidateClass','Probable adversary UAS — new variant');setText('candidateId','RF-SIG-2037');setText('candidateConfidence','96.8%');
-    setText('metricFleet','Candidate isolated');setText('systemStatus','Approval required');addEvent('Candidate signature isolated','Unapproved intelligence is prevented from becoming operational truth.','HELD','orange')
-  }
-  if(scenario==='ddil'){
-    addEvent('Unknown RF signature','The contact does not match a trusted local signature.','UNKNOWN','orange');await wait(600);
-    addEvent('EO unavailable','Camera tasking fails because communications and sensor availability are degraded.','DDIL','orange');await verify();
-    setChecks([{text:'PASS',color:'#6ee7b7'},{text:'INCOMPLETE',color:'#fcd34d'},{text:'PASS',color:'#6ee7b7'},{text:'LOCAL POLICY ACTIVE',color:'#6ee7b7'},{text:'UNVERIFIED',color:'#fcd34d'},{text:'TRACK ONLY',color:'#fcd34d'}]);
-    $('decisionBadge').className='badge badge-amber';setText('decisionBadge','DDIL SAFE');setText('decisionCallout','Continue local tracking. Preserve the object as unknown. Do not create or distribute a new signature without corroborating evidence.');
-    setText('metricVerified','1');setText('metricFleet','Local-only state');setText('systemStatus','DDIL-safe');receipt('Track as unknown','Trusted RF evidence only','No fleet propagation','ARB-DDIL-021')
-  }
-  if(scenario==='rogue'){
-    addEvent('Unauthorized classification attempt','A rogue application attempts to label the track as friendly and publish without evidence.','ALERT','red');await verify();
-    setChecks([{text:'FAIL',color:'#fca5a5'},{text:'FAIL',color:'#fca5a5'},{text:'UNAUTHORIZED',color:'#fca5a5'},{text:'DENY',color:'#fca5a5'},{text:'NOT APPLICABLE',color:'#94a3b8'},{text:'REJECTED',color:'#fca5a5'}]);
-    $('decisionBadge').className='badge badge-red';setText('decisionBadge','RED');setText('decisionCallout','REJECTED: Isolate the rogue application, preserve the last trusted track state, and block the unauthorized classification.');
-    setText('metricVerified','1');setText('metricFleet','Protected');setText('systemStatus','Threat contained');receipt('Reject update','Failed identity + missing evidence','Shared picture unchanged','ARB-DENY-021')
-  }
-  running=false;$('runMission').disabled=false
-}
-$('runMission').addEventListener('click',runMission);
-$('approveSignature').addEventListener('click',()=>{
-  $('candidateBadge').className='badge badge-green';setText('candidateBadge','APPROVED');setText('candidateDistribution','Fleet distribution enabled');
-  $('decisionBadge').className='badge badge-green';setText('decisionBadge','GREEN');setText('decisionCallout','APPROVED: RF-SIG-2037 is now trusted mission knowledge and may be distributed to authorized edge nodes.');
-  setText('metricVerified','1');setText('metricFleet','Registry updated');setText('systemStatus','Mission knowledge verified');$('candidateActions').style.display='none';
-  receipt('Approve RF-SIG-2037','RF + EO + model + operator approval','Authorized fleet updated','ARB-2037-A1');
-  addEvent('New signature approved','Future detections can identify this adversary UAS without repeating the full EO tasking sequence.','DISTRIBUTED','green')
-});
-$('requestEvidence').addEventListener('click',()=>{
-  setText('candidateBadge','MORE EVIDENCE REQUESTED');setText('candidateDistribution','Blocked pending additional evidence');
-  setText('decisionCallout','Continue tracking and task another available sensor before mission authority makes a final decision.');
-  addEvent('Additional evidence requested','The candidate state is preserved while another sensor is tasked.','PENDING','violet')
-});
-$('rejectSignature').addEventListener('click',()=>{
-  $('candidateBadge').className='badge badge-red';setText('candidateBadge','REJECTED');setText('candidateDistribution','Not distributed');
-  $('decisionBadge').className='badge badge-red';setText('decisionBadge','RED');setText('decisionCallout','REJECTED: The candidate signature is removed from the approval queue. The object remains tracked as unknown.');
-  setText('metricFleet','Registry unchanged');setText('systemStatus','Mission state preserved');$('candidateActions').style.display='none';
-  receipt('Reject candidate','Evidence retained for review','No fleet update','ARB-2037-R1');
-  addEvent('Candidate rejected','The unapproved signature does not enter the trusted mission registry.','CLOSED','red')
-});
-</script>
+  <script>
+    const scenes = [...document.querySelectorAll('.scene')];
+    const dots = [...document.querySelectorAll('.dot')];
+    let current = 0;
+    let timers = [];
+
+    function clearTimers(){
+      timers.forEach(clearTimeout);
+      timers = [];
+    }
+
+    function showScene(index){
+      clearTimers();
+      current = Math.max(0, Math.min(index, scenes.length - 1));
+      scenes.forEach((scene, i) => scene.classList.toggle('active', i === current));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+
+      if(current === 1){
+        const steps = [...document.querySelectorAll('#odcSequence .sequence-step')];
+        steps.forEach(s => s.classList.remove('visible'));
+        steps.forEach((step, i) => {
+          timers.push(setTimeout(() => step.classList.add('visible'), 550 + i * 720));
+        });
+        timers.push(setTimeout(() => showScene(2), 3400));
+      }
+
+      if(current === 2){
+        timers.push(setTimeout(() => showScene(3), 3500));
+      }
+
+      if(current === 3){
+        const checks = [...document.querySelectorAll('#checks .check')];
+        checks.forEach(c => c.classList.remove('visible'));
+        checks.forEach((check, i) => {
+          timers.push(setTimeout(() => check.classList.add('visible'), 650 + i * 480));
+        });
+        timers.push(setTimeout(() => showScene(4), 4300));
+      }
+    }
+
+    document.getElementById('beginMission').addEventListener('click', () => showScene(1));
+    document.getElementById('approve').addEventListener('click', () => showScene(5));
+    document.getElementById('moreEvidence').addEventListener('click', () => {
+      document.querySelector('.status-chip').textContent = 'Additional EO pass requested';
+      setTimeout(() => document.querySelector('.status-chip').textContent = 'Mission authority required', 1800);
+    });
+    document.getElementById('reject').addEventListener('click', () => {
+      document.querySelector('.status-chip').textContent = 'Candidate rejected · distribution blocked';
+    });
+
+    dots.forEach((dot, i) => dot.addEventListener('click', () => showScene(i)));
+
+    const receiptModal = document.getElementById('receiptModal');
+    const architectureModal = document.getElementById('architectureModal');
+
+    function openModal(modal){ modal.classList.add('open'); }
+    function closeModal(modal){ modal.classList.remove('open'); }
+
+    ['receiptTop','viewReceipt'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => openModal(receiptModal));
+    });
+    document.getElementById('closeReceipt').addEventListener('click', () => closeModal(receiptModal));
+    document.getElementById('openArchitecture').addEventListener('click', () => openModal(architectureModal));
+    document.getElementById('closeArchitecture').addEventListener('click', () => closeModal(architectureModal));
+
+    [receiptModal,architectureModal].forEach(modal => {
+      modal.addEventListener('click', e => {
+        if(e.target === modal) closeModal(modal);
+      });
+    });
+
+    function restart(){ showScene(0); }
+    document.getElementById('restartTop').addEventListener('click', restart);
+    document.getElementById('restartBottom').addEventListener('click', restart);
+
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape'){
+        closeModal(receiptModal);
+        closeModal(architectureModal);
+      }
+      if(e.key === 'ArrowRight') showScene(current + 1);
+      if(e.key === 'ArrowLeft') showScene(current - 1);
+    });
+  </script>
 </body>
 </html>
